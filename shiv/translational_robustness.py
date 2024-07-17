@@ -1,4 +1,6 @@
 import numpy as np
+from tqdm import tqdm
+
 
 #------------------------------------------------------------------------
 # Main class
@@ -46,22 +48,26 @@ class TranslationalRobustness:
 
         return self.calculate_variation_score(scores_realigned_list, scores_normalized)
 
+    
     def test(self, X, scores_for_X, attr_function):
         variation_scores = []
-
-        for index in range(len(X)):
-            print("Index:", index)
-            sequence = X[index]
-            scores_sequence = scores_for_X[index]
-
-            mean_top_scores = calculate_mean_norm_factor(scores_sequence, num_top_indices=10)
-            scores_normalized = normalize_scores(scores_sequence, mean_top_scores)
-
-            variation_score = self.translate(sequence, attr_function, mean_top_scores, scores_normalized)
-            print(variation_score)
-            variation_scores.append(variation_score)
-
+    
+        # Initialize tqdm with total length
+        with tqdm(total=len(X), desc='Processing') as pbar:
+            for index in range(len(X)):
+                sequence = X[index]
+                scores_sequence = scores_for_X[index]
+    
+                mean_top_scores = calculate_mean_norm_factor(scores_sequence, num_top_indices=10)
+                scores_normalized = normalize_scores(scores_sequence, mean_top_scores)
+    
+                variation_score = self.translate(sequence, attr_function, mean_top_scores, scores_normalized)
+    
+                variation_scores.append(variation_score)
+                pbar.update(1)  # Update progress bar
+    
         return variation_scores
+
 
 
 #------------------------------------------------------------------------
