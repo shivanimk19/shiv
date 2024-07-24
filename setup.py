@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='shiv',  
-    version='0.1.8',  
+    version='0.1.9',  
     description='A package to perform sanity checks on attribution methods.',
     packages=find_packages(),  
     install_requires=[],
