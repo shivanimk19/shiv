@@ -15,10 +15,11 @@ class Necessity:
 
     def calculate_thresholds(self, all_attr_scores):
         max_abs_value = np.max(np.abs(all_attr_scores))
-        thresholds = (np.array(self.PERCENTILES) / 100.0 * max_abs_value).round(3).tolist()
+        thresholds = (np.array(self.PERCENTILES) / 100.0 * max_abs_value).round(5).tolist()
         thresholds[-1] += 1
-        thresholds[-1] = round(thresholds[-1], 3)
+        thresholds[-1] = round(thresholds[-1], 5)
         return thresholds
+
 
     def create_shuffled_sequence(self, sequence, num_shuffles=20):
         shuffled_sequence = np.copy(sequence)
