@@ -42,6 +42,7 @@ class Necessity:
         preds_wt = []
         preds_modified = []
         ratios_necessity = []
+        num_shuffled_list = []
 
         for index in range(len(X)):
             print(f'{index=}')
@@ -53,6 +54,7 @@ class Necessity:
 
             wt_pred = X_model_pred[index, self.class_index]
             modified_model_preds = []
+            num_shuffled_per_iteration = []
 
             for i in range(self.num_iterations):
                 shuffled_sequence = self.create_shuffled_sequence(sequence, 20)
@@ -64,14 +66,16 @@ class Necessity:
                 # Get model predictions of each of these new sequences and save for each method
                 modified_pred = self.model.predict(np.array([salient_removed_sequence]))[:, self.class_index]
                 modified_model_preds.append(modified_pred)
+                num_shuffled_per_iteration.append(num_index_shuffled)
 
             modified_model_preds_avg = np.mean(modified_model_preds)
             ratio_necessity = modified_model_preds_avg / wt_pred
             preds_wt.append(wt_pred)
             preds_modified.append(modified_model_preds_avg)
             ratios_necessity.append(ratio_necessity)
+            num_shuffled_list.append(np.mean(num_shuffled_per_iteration))
         
-        return preds_wt, preds_modified, ratios_necessity
+        return preds_wt, preds_modified, ratios_necessity, num_shuffled_list
 
     def necessity_test(self, X, attr_function, scores_for_X, X_model_pred, thresholds):
         # Create the DataFrame
@@ -80,11 +84,12 @@ class Necessity:
             'Threshold': thresholds,
             'Pred WT': [[] for _ in range(len(self.PERCENTILES))],
             'Pred Modified': [[] for _ in range(len(self.PERCENTILES))],
-            'Ratios': [[] for _ in range(len(self.PERCENTILES))]
+            'Ratios': [[] for _ in range(len(self.PERCENTILES))],
+            'Avg Shuffled Nucs': [0 for _ in range(len(self.PERCENTILES))]
         })
 
         for threshold in thresholds:
-            preds_wt, preds_modified, ratios_necessity = self.evaluate_necessity_ratios(X, scores_for_X, X_model_pred, threshold)
+            preds_wt, preds_modified, ratios_necessity, num_shuffled_list = self.evaluate_necessity_ratios(X, scores_for_X, X_model_pred, threshold)
             
             # Find the index for the current threshold in the DataFrame
             idx = necessity_model_pred_df[necessity_model_pred_df['Threshold'] == threshold].index[0]
@@ -93,6 +98,7 @@ class Necessity:
             necessity_model_pred_df.at[idx, 'Pred WT'] = preds_wt
             necessity_model_pred_df.at[idx, 'Pred Modified'] = preds_modified
             necessity_model_pred_df.at[idx, 'Ratios'] = ratios_necessity
+            necessity_model_pred_df.at[idx, 'Avg Shuffled Nucs'] = np.mean(num_shuffled_list)
         
         return necessity_model_pred_df
 
