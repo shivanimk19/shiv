@@ -37,6 +37,7 @@ class Necessity:
         modified_sequence = np.copy(original_seq)
         modified_sequence[motif_indexes] = shuffled_seq[motif_indexes]
         num_shuffled = len(motif_indexes)
+        print(f"Num Motifs at {threshold} = {num_shuffled}")
         
         return modified_sequence, num_shuffled
 
