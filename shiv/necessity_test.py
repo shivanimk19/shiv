@@ -87,7 +87,7 @@ class Necessity:
             'Pred WT': [[] for _ in range(len(self.PERCENTILES))],
             'Pred Modified': [[] for _ in range(len(self.PERCENTILES))],
             'Ratios': [[] for _ in range(len(self.PERCENTILES))],
-            'Avg Shuffled Nucs': [0 for _ in range(len(self.PERCENTILES))]
+            'Avg Shuffled Nucs': [[] for _ in range(len(self.PERCENTILES))]
         })
 
         for threshold in thresholds:
