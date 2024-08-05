@@ -100,7 +100,7 @@ class Necessity:
             necessity_model_pred_df.at[idx, 'Pred WT'] = preds_wt
             necessity_model_pred_df.at[idx, 'Pred Modified'] = preds_modified
             necessity_model_pred_df.at[idx, 'Ratios'] = ratios_necessity
-            necessity_model_pred_df.at[idx, 'Avg Shuffled Nucs'] = np.mean(num_shuffled_list)
+            necessity_model_pred_df.at[idx, 'Avg Shuffled Nucs'] = num_shuffled_list
         
         return necessity_model_pred_df
 
