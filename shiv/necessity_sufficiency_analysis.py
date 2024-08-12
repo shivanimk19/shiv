@@ -43,15 +43,9 @@ class AttributionTest:
         return thresholds
 
     def calculate_thresholds_by_percentiles(self, all_attr_scores, percents):
-        # Step 1: Flatten the 3D array into a 1D array
         flattened_scores = all_attr_scores.flatten()
-
-        # Step 2: Take the absolute value of the flattened array
         abs_flattened_scores = np.abs(flattened_scores)
-
-        # Step 3: Calculate the threshold values for the specified percentiles
         thresholds = [round(np.percentile(abs_flattened_scores, p), 5) for p in percents]
-
         return thresholds
 
     def create_shuffled_sequence(self, sequence, num_shuffles=20):
