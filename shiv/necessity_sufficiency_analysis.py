@@ -29,19 +29,29 @@ def create_df(sequence, scores):
 #------------------------------------------------------------------------
 
 class AttributionTest:
-    DEFAULT_PERCENTILES = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 
-    def __init__(self, model, class_index, num_iterations=20, percentiles=None):
+    def __init__(self, model, class_index, num_iterations=20):
         self.model = model
         self.class_index = class_index
         self.num_iterations = num_iterations
-        self.PERCENTILES = percentiles if percentiles is not None else self.DEFAULT_PERCENTILES
 
-    def calculate_thresholds(self, all_attr_scores):
+    def calculate_thresholds_by_max(self, all_attr_scores, percents):
         max_abs_value = np.max(np.abs(all_attr_scores))
-        thresholds = (np.array(self.PERCENTILES) / 100.0 * max_abs_value).round(5).tolist()
+        thresholds = (np.array(percents) / 100.0 * max_abs_value).round(5).tolist()
         thresholds[-1] += 1
         thresholds[-1] = round(thresholds[-1], 5)
+        return thresholds
+
+    def calculate_thresholds_by_percentiles(self, all_attr_scores, percents):
+        # Step 1: Flatten the 3D array into a 1D array
+        flattened_scores = all_attr_scores.flatten()
+
+        # Step 2: Take the absolute value of the flattened array
+        abs_flattened_scores = np.abs(flattened_scores)
+
+        # Step 3: Calculate the threshold values for the specified percentiles
+        thresholds = [round(np.percentile(abs_flattened_scores, p), 5) for p in percents]
+
         return thresholds
 
     def create_shuffled_sequence(self, sequence, num_shuffles=20):
@@ -203,4 +213,3 @@ class AttributionTest:
             sufficiency_model_pred_df.at[idx, 'Avg Reinserted Nucs'] = num_reinserted_list
         
         return sufficiency_model_pred_df
-
