@@ -47,7 +47,7 @@ class Necessity:
             shuffled_sequence = self.create_shuffled_sequence(sequence, 20)
 
             for prune_val in prune_vals:
-                modified_sequence = self.remove_background_nucs(sequence, seq_scores_normalized, shuffled_sequence, prune_val)
+                modified_sequence = self.remove_salient_nucs(sequence, seq_scores_normalized, shuffled_sequence, prune_val)
                 modified_pred = self.model.predict(np.array([modified_sequence]))[:, self.class_index]
                 all_modified_preds[prune_val].append(modified_pred[0])
 
