@@ -71,8 +71,8 @@ class Sufficiency:
         modified_sequence[low_indices] = shuffled_seq[low_indices]
 
         return modified_sequence
-
-     def generate_prune_vals(self, seq_length, step):
+        
+    def generate_prune_vals(self, seq_length, step):
         # Generate prune values from step to length_of_seq, inclusive, increasing by step size
         prune_vals = list(range(step, seq_length + 1, step))
         
