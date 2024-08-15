@@ -72,6 +72,15 @@ class Sufficiency:
 
         return modified_sequence
 
+     def generate_prune_vals(self, seq_length, step):
+        # Generate prune values from step to length_of_seq, inclusive, increasing by step size
+        prune_vals = list(range(step, seq_length + 1, step))
+        
+        if prune_vals[-1] != seq_length:
+            prune_vals.append(seq_length)
+        
+        return prune_vals
+
 #------------------------------------------------------------------------
 # Helper Functions
 #------------------------------------------------------------------------
