@@ -72,7 +72,7 @@ class Necessity:
         # Replace the elements at the high-scoring indices with the shuffled sequence
         modified_sequence[high_indices] = shuffled_seq[high_indices]
 
-    return modified_sequence
+        return modified_sequence
         
     def generate_prune_vals(self, seq_length, step):
         # Generate prune values from step to length_of_seq, inclusive, increasing by step size
