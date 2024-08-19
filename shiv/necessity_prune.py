@@ -13,7 +13,7 @@ class Necessity:
     def necessity_test(self, X, scores_for_X, X_model_pred, prune_vals):
         # Create the DataFrame
         necessity_model_pred_df = pd.DataFrame({
-            'Num Pruned-Lowest Score': prune_vals,
+            'Num Pruned-Highest Score': prune_vals,
             'Pred WT': [[] for _ in range(len(prune_vals))],
             'Pred Modified': [[] for _ in range(len(prune_vals))],
             'Ratios': [[] for _ in range(len(prune_vals))],
@@ -66,7 +66,7 @@ class Necessity:
         scores_x_input['Total_Score'] = scores_x_input.iloc[:, :4].sum(axis=1)
 
         # Get the indices of the highest-scoring prune_val sequences
-        high_indices = scores_x_input['Total_Score'].abs().nlargest(prune_val).index.tolist()
+        high_indices = scores_x_input['Total_Score'].nlargest(prune_val).index.tolist()
         # Create a copy of the original sequence
         modified_sequence = np.copy(original_seq)
         # Replace the elements at the high-scoring indices with the shuffled sequence
