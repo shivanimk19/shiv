@@ -65,7 +65,7 @@ class Sufficiency:
         scores_x_input = create_df(original_seq, scores)
         scores_x_input['Total_Score'] = scores_x_input.iloc[:, :4].sum(axis=1)
 
-        low_indices = scores_x_input['Total_Score'].abs().nsmallest(prune_val).index.tolist()
+        low_indices = scores_x_input['Total_Score'].nsmallest(prune_val).index.tolist()
 
         modified_sequence = np.copy(original_seq)
         modified_sequence[low_indices] = shuffled_seq[low_indices]
