@@ -85,7 +85,7 @@ class Sufficiency:
     
 
 
-    def sufficiency_test(self, X, scores_for_X, X_model_pred, prune_vals, filename, split_value):
+    def sufficiency_test_split(self, X, scores_for_X, X_model_pred, prune_vals, filename, split_value):
         # Ensure the file is empty at the start
         with open(filename, 'wb') as file:
             pass  # This will create an empty file or clear an existing one
