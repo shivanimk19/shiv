@@ -82,63 +82,63 @@ class Sufficiency:
         return prune_vals
 
     import pandas as pd
-import pickle
-import os
-
-def sufficiency_test_split(self, X, scores_for_X, X_model_pred, prune_vals, filename, split_value):
-    # Create the initial empty DataFrame
-    sufficiency_model_pred_df = pd.DataFrame({
-        'Num Pruned-Lowest Score': prune_vals,
-        'Pred WT': [[] for _ in range(len(prune_vals))],
-        'Pred Modified': [[] for _ in range(len(prune_vals))],
-        'Ratios': [[] for _ in range(len(prune_vals))],
-    })
-
-    # Check if the file exists and load the DataFrame if it does
-    if os.path.exists(filename):
-        with open(filename, 'rb') as file:
-            existing_df = pickle.load(file)
-            sufficiency_model_pred_df = pd.concat([existing_df, sufficiency_model_pred_df], ignore_index=True)
+    import pickle
+    import os
     
-    for index in range(len(X)):
-        print(f'{index=}')
-        sequence = X[index]
-        seq_scores = scores_for_X[index]
-
-        mean_top_scores = calculate_mean_norm_factor(seq_scores, num_top_indices=10)
-        seq_scores_normalized = normalize_scores(seq_scores, mean_top_scores)
-        wt_pred = X_model_pred[index, self.class_index]
-
-        avg_modified_preds = self.process_sequence(sequence, seq_scores_normalized, prune_vals)
-
-        for prune_idx, prune_val in enumerate(prune_vals):
-            avg_modified_pred = avg_modified_preds[prune_val]
-            pred_ratio = avg_modified_pred / wt_pred
-
-            sufficiency_model_pred_df.at[prune_idx, 'Pred WT'].append(wt_pred)
-            sufficiency_model_pred_df.at[prune_idx, 'Pred Modified'].append(avg_modified_pred)
-            sufficiency_model_pred_df.at[prune_idx, 'Ratios'].append(pred_ratio)
-
-        # Check if the current DataFrame size has reached the split value
-        if index > 0 and index % split_value == 0:
-            # Save the DataFrame to the pickle file
+    def sufficiency_test_split(self, X, scores_for_X, X_model_pred, prune_vals, filename, split_value):
+        # Create the initial empty DataFrame
+        sufficiency_model_pred_df = pd.DataFrame({
+            'Num Pruned-Lowest Score': prune_vals,
+            'Pred WT': [[] for _ in range(len(prune_vals))],
+            'Pred Modified': [[] for _ in range(len(prune_vals))],
+            'Ratios': [[] for _ in range(len(prune_vals))],
+        })
+    
+        # Check if the file exists and load the DataFrame if it does
+        if os.path.exists(filename):
+            with open(filename, 'rb') as file:
+                existing_df = pickle.load(file)
+                sufficiency_model_pred_df = pd.concat([existing_df, sufficiency_model_pred_df], ignore_index=True)
+        
+        for index in range(len(X)):
+            print(f'{index=}')
+            sequence = X[index]
+            seq_scores = scores_for_X[index]
+    
+            mean_top_scores = calculate_mean_norm_factor(seq_scores, num_top_indices=10)
+            seq_scores_normalized = normalize_scores(seq_scores, mean_top_scores)
+            wt_pred = X_model_pred[index, self.class_index]
+    
+            avg_modified_preds = self.process_sequence(sequence, seq_scores_normalized, prune_vals)
+    
+            for prune_idx, prune_val in enumerate(prune_vals):
+                avg_modified_pred = avg_modified_preds[prune_val]
+                pred_ratio = avg_modified_pred / wt_pred
+    
+                sufficiency_model_pred_df.at[prune_idx, 'Pred WT'].append(wt_pred)
+                sufficiency_model_pred_df.at[prune_idx, 'Pred Modified'].append(avg_modified_pred)
+                sufficiency_model_pred_df.at[prune_idx, 'Ratios'].append(pred_ratio)
+    
+            # Check if the current DataFrame size has reached the split value
+            if index > 0 and index % split_value == 0:
+                # Save the DataFrame to the pickle file
+                with open(filename, 'wb') as file:
+                    pickle.dump(sufficiency_model_pred_df, file)
+                
+                # Reset the DataFrame for the next batch
+                sufficiency_model_pred_df = pd.DataFrame({
+                    'Num Pruned-Lowest Score': prune_vals,
+                    'Pred WT': [[] for _ in range(len(prune_vals))],
+                    'Pred Modified': [[] for _ in range(len(prune_vals))],
+                    'Ratios': [[] for _ in range(len(prune_vals))],
+                })
+    
+        # Save any remaining data after the loop ends
+        if not sufficiency_model_pred_df.empty:
             with open(filename, 'wb') as file:
                 pickle.dump(sufficiency_model_pred_df, file)
-            
-            # Reset the DataFrame for the next batch
-            sufficiency_model_pred_df = pd.DataFrame({
-                'Num Pruned-Lowest Score': prune_vals,
-                'Pred WT': [[] for _ in range(len(prune_vals))],
-                'Pred Modified': [[] for _ in range(len(prune_vals))],
-                'Ratios': [[] for _ in range(len(prune_vals))],
-            })
-
-    # Save any remaining data after the loop ends
-    if not sufficiency_model_pred_df.empty:
-        with open(filename, 'wb') as file:
-            pickle.dump(sufficiency_model_pred_df, file)
-
-    return filename
+    
+        return filename
 
 
 #------------------------------------------------------------------------
