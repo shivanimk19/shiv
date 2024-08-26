@@ -3,6 +3,8 @@ import pandas as pd
 import tensorflow as tf
 import tfomics
 from deeplift import dinuc_shuffle
+import pickle
+import os
 
 class Sufficiency:
     def __init__(self, model, class_index, num_iterations=20):
@@ -80,10 +82,6 @@ class Sufficiency:
             prune_vals.append(seq_length)
         
         return prune_vals
-
-    import pandas as pd
-    import pickle
-    import os
     
     def sufficiency_test_split(self, X, scores_for_X, X_model_pred, prune_vals, filename, split_value):
         # Create the initial empty DataFrame
