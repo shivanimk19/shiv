@@ -83,8 +83,13 @@ class Sufficiency:
         
         return prune_vals
     
-    def sufficiency_test_split(self, X, scores_for_X, X_model_pred, prune_vals, filename, split_value):
-        # Create the initial empty DataFrame
+
+
+    def sufficiency_test(self, X, scores_for_X, X_model_pred, prune_vals, filename, split_value):
+        # Ensure the file is empty at the start
+        with open(filename, 'wb') as file:
+            pass  # This will create an empty file or clear an existing one
+    
         sufficiency_model_pred_df = pd.DataFrame({
             'Num Pruned-Lowest Score': prune_vals,
             'Pred WT': [[] for _ in range(len(prune_vals))],
@@ -92,12 +97,6 @@ class Sufficiency:
             'Ratios': [[] for _ in range(len(prune_vals))],
         })
     
-        # Check if the file exists and load the DataFrame if it does
-        if os.path.exists(filename):
-            with open(filename, 'rb') as file:
-                existing_df = pickle.load(file)
-                sufficiency_model_pred_df = pd.concat([existing_df, sufficiency_model_pred_df], ignore_index=True)
-        
         for index in range(len(X)):
             print(f'{index=}')
             sequence = X[index]
@@ -117,10 +116,10 @@ class Sufficiency:
                 sufficiency_model_pred_df.at[prune_idx, 'Pred Modified'].append(avg_modified_pred)
                 sufficiency_model_pred_df.at[prune_idx, 'Ratios'].append(pred_ratio)
     
-            # Check if the current DataFrame size has reached the split value
-            if index > 0 and index % split_value == 0:
+            # Every time we reach the split value, save to file and reset DataFrame
+            if (index + 1) % split_value == 0 or index == len(X) - 1:
                 # Save the DataFrame to the pickle file
-                with open(filename, 'wb') as file:
+                with open(filename, 'ab') as file:  # 'ab' mode for appending in binary
                     pickle.dump(sufficiency_model_pred_df, file)
                 
                 # Reset the DataFrame for the next batch
@@ -130,11 +129,6 @@ class Sufficiency:
                     'Pred Modified': [[] for _ in range(len(prune_vals))],
                     'Ratios': [[] for _ in range(len(prune_vals))],
                 })
-    
-        # Save any remaining data after the loop ends
-        if not sufficiency_model_pred_df.empty:
-            with open(filename, 'wb') as file:
-                pickle.dump(sufficiency_model_pred_df, file)
     
         return filename
 
